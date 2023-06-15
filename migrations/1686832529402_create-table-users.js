@@ -8,6 +8,7 @@ exports.up = (pgm) => {
       type: 'VARCHAR(20)',
       notNull: true,
       primaryKey: true,
+      unique: true,
     },
     email: {
       type: 'VARCHAR(50)',

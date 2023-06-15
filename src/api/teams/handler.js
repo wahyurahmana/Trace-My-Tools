@@ -59,7 +59,6 @@ module.exports = class TeamHandler {
         status: 'success',
         message: `Success Edit ID ${id}`,
       });
-      response.code(200);
       return response;
     } catch (error) {
       console.log(error);
