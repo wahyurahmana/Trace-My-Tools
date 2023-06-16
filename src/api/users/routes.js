@@ -6,8 +6,13 @@ module.exports = (handler) => [
   },
   {
     method: 'POST',
-    path: '/users',
+    path: '/register',
     handler: (request, h) => handler.postUserHandler(request, h),
+  },
+  {
+    method: 'POST',
+    path: '/login',
+    handler: (request, h) => handler.loginHandler(request, h),
   },
   {
     method: 'DELETE',

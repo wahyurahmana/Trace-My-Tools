@@ -1,11 +1,11 @@
-const TeamHandler = require('./handler');
+const UserHandler = require('./handler');
 const routes = require('./routes');
 
 module.exports = {
-  name: 'teams',
+  name: 'users',
   version: '1.0.0',
-  register: async (server, { service, validator }) => {
-    const teamHandler = new TeamHandler(service, validator);
-    server.route(routes(teamHandler));
+  register: async (server, { service, validator, tokenManager }) => {
+    const userHandler = new UserHandler(service, validator, tokenManager);
+    server.route(routes(userHandler));
   },
 };

@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 const salt = bcrypt.genSaltSync(12);
 
-module.exports = class RoleService {
+module.exports = class UserService {
   constructor() {
     this._pool = new Pool();
   }
@@ -26,7 +26,7 @@ module.exports = class RoleService {
     if (!result.rows.length) {
       // error jika tidak ditemukan
     }
-    return result.rows[0];
+    return result.rows;
   }
 
   async addUser(data) {
@@ -89,5 +89,17 @@ module.exports = class RoleService {
       // error jika gagal input
     }
     return result.rows[0].id_badge;
+  }
+
+  async checkIdBadgeAndPass({ idBadge, password }) {
+    const user = await this.detailUser(idBadge);
+    if (!user.length) {
+      // return jika user tidak ditemukan
+    }
+    const checkPassword = bcrypt.compareSync(password, user[0].password);
+    if (!checkPassword) {
+      // return jika password tidak cocok dengan db
+    }
+    return { idBadge: user[0].id_badge, teamId: user[0].team_id };
   }
 };

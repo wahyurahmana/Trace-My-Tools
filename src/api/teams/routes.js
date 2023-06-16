@@ -8,6 +8,9 @@ module.exports = (handler) => [
     method: 'POST',
     path: '/teams',
     handler: (request, h) => handler.postTeamHandler(request, h),
+    options: {
+      auth: 'app_jwt',
+    },
   },
   {
     method: 'DELETE',
