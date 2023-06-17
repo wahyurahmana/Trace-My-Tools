@@ -1,6 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
+const InvariantError = require('../exceptions/InvariantError');
+const NotFoundError = require('../exceptions/NotFoundError');
+const AuthenticationError = require('../exceptions/AuthenticationError');
 
 const salt = bcrypt.genSaltSync(12);
 
@@ -24,7 +27,7 @@ module.exports = class UserService {
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
-      // error jika tidak ditemukan
+      throw new NotFoundError('Data Tidak Ditemukan!');
     }
     return result.rows;
   }
@@ -40,7 +43,7 @@ module.exports = class UserService {
     };
     const result = await this._pool.query(query);
     if (!result.rows[0].id_badge) {
-      // error jika gagal input
+      throw new InvariantError('Gagal Menambahkan Data!');
     }
     return result.rows[0].id_badge;
   }
@@ -52,7 +55,7 @@ module.exports = class UserService {
     };
     const result = await this._pool.query(query);
     if (!result.rows[0].id_badge) {
-      // error jika gagal input
+      throw new NotFoundError('Gagal Menghapus Data. Id Tidak Ditemukan!');
     }
     return result.rows[0].id_badge;
   }
@@ -67,7 +70,7 @@ module.exports = class UserService {
     };
     const result = await this._pool.query(query);
     if (!result.rows[0].id_badge) {
-      // error jika gagal input
+      throw new NotFoundError('Gagal Mengubah Data. Id Tidak Ditemukan!');
     }
     return result.rows[0].id_badge;
   }
@@ -77,7 +80,7 @@ module.exports = class UserService {
     const user = await this.detailUser(idBadge);
     const checkOldPassword = bcrypt.compareSync(oldPassword, user.rows[0].password);
     if (!checkOldPassword) {
-      // error jika password lama yang di input tidak cocok dengan data password di db
+      throw new InvariantError('Password Lama Tidak Cocok!');
     }
     const hashPassword = bcrypt.hashSync(newPassword, salt);
     const query = {
@@ -86,20 +89,24 @@ module.exports = class UserService {
     };
     const result = await this._pool.query(query);
     if (!result.rows[0].id_badge) {
-      // error jika gagal input
+      throw new InvariantError('Gagal Mengubah Password!');
     }
     return result.rows[0].id_badge;
   }
 
   async checkIdBadgeAndPass({ idBadge, password }) {
-    const user = await this.detailUser(idBadge);
-    if (!user.length) {
-      // return jika user tidak ditemukan
+    const query = {
+      text: 'select * from users where id_badge = $1;',
+      values: [idBadge],
+    };
+    const user = await this._pool.query(query);
+    if (!user.rows.length) {
+      throw new AuthenticationError('Id Badge/Password Salah!');
     }
-    const checkPassword = bcrypt.compareSync(password, user[0].password);
+    const checkPassword = bcrypt.compareSync(password, user.rows[0].password);
     if (!checkPassword) {
-      // return jika password tidak cocok dengan db
+      throw new AuthenticationError('Id Badge/Password Salah!');
     }
-    return { idBadge: user[0].id_badge, teamId: user[0].team_id };
+    return { idBadge: user.rows[0].id_badge, teamId: user.rows[0].team_id };
   }
 };

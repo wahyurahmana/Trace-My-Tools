@@ -1,4 +1,6 @@
 /* eslint-disable no-underscore-dangle */
+const ClientError = require('../../exceptions/ClientError');
+
 module.exports = class TeamHandler {
   constructor(service, validator) {
     this._service = service;
@@ -16,14 +18,29 @@ module.exports = class TeamHandler {
       });
       return response;
     } catch (error) {
-      console.log(error);
-      return error;
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
     }
   }
 
   async postTeamHandler(request, h) {
     try {
-      // this._validator.validateCameraPayload(request.payload);
+      this._validator.validateTeamPayload(request.payload);
       const id = await this._service.addTeam(request.payload);
       const response = h.response({
         status: 'success',
@@ -32,8 +49,23 @@ module.exports = class TeamHandler {
       response.code(201);
       return response;
     } catch (error) {
-      console.log(error);
-      return error;
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
     }
   }
 
@@ -46,8 +78,23 @@ module.exports = class TeamHandler {
       });
       return response;
     } catch (error) {
-      console.log(error);
-      return error;
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
     }
   }
 
@@ -61,8 +108,23 @@ module.exports = class TeamHandler {
       });
       return response;
     } catch (error) {
-      console.log(error);
-      return error;
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
     }
   }
 
@@ -77,8 +139,23 @@ module.exports = class TeamHandler {
       });
       return response;
     } catch (error) {
-      console.log(error);
-      return error;
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
     }
   }
 };

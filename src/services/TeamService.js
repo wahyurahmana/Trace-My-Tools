@@ -1,6 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
+const InvariantError = require('../exceptions/InvariantError');
+const NotFoundError = require('../exceptions/NotFoundError');
 
 module.exports = class TeamService {
   constructor() {
@@ -24,7 +26,7 @@ module.exports = class TeamService {
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
-      // error tidak berhasil ditambah dalam database
+      throw new InvariantError('Gagal Menambahkan Data!');
     }
     return result.rows[0].id;
   }
@@ -36,7 +38,7 @@ module.exports = class TeamService {
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
-      // error data tidak ditemukan
+      throw new NotFoundError('Gagal Menghapus Data. Id Tidak Ditemukan!');
     }
     return result.rows[0].id;
   }
@@ -48,7 +50,7 @@ module.exports = class TeamService {
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
-      // error jika tidak ditemukan
+      throw new NotFoundError('Gagal Mengubah Data. Id Tidak Ditemukan!');
     }
     return result.rows[0].id;
   }
@@ -60,7 +62,7 @@ module.exports = class TeamService {
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
-      // error jika tidak ditemukan
+      throw new NotFoundError('Data Tidak Ditemukan!');
     }
     return result.rows[0];
   }

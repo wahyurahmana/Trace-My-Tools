@@ -1,10 +1,11 @@
-const { CameraPayloadSchema } = require('./schema');
+const { TeamPayloadSchema } = require('./schema');
+const InvariantError = require('../exceptions/InvariantError');
 
 module.exports = {
-  validateCameraPayload: (payload) => {
-    const validationResult = CameraPayloadSchema.validate(payload);
+  validateTeamPayload: (payload) => {
+    const validationResult = TeamPayloadSchema.validate(payload);
     if (validationResult.error) {
-      // return error
+      throw new InvariantError(validationResult.error.message);
     }
   },
 };

@@ -9,7 +9,7 @@ const teams = require('./api/teams');
 const users = require('./api/users');
 
 // Service
-const tokenManager = require('./utility/jwt');
+const tokenManager = require('./utilities/jwt');
 const TeamService = require('./services/TeamService');
 const UserService = require('./services/UserService');
 
