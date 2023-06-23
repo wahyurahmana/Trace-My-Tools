@@ -2,15 +2,16 @@
 const ClientError = require('../../exceptions/ClientError');
 
 module.exports = class UserHandler {
-  constructor(service, validator, tokenManager) {
+  constructor(service, validator, tokenManager, authService) {
     this._service = service;
     this._validator = validator;
     this._tokenManager = tokenManager;
+    this._authService = authService;
   }
 
   async getUserHandler(request, h) {
     try {
-      // hanya admin yang bisa lihat daftar semua user
+      await this._authService.isAdmin(request.auth.credentials.idBadge);
       const users = await this._service.allUsers();
       const response = h.response({
         status: 'success',
@@ -42,8 +43,7 @@ module.exports = class UserHandler {
 
   async detailUserHandler(request, h) {
     try {
-      // admin bisa lihat semua detail user atau
-      // params idBadge hrs sama dgn user yang login
+      await this._authService.isOwnerUser(request.auth.credentials.idBadge);
       const user = await this._service.detailUser(request.params.idBadge);
       const response = h.response({
         status: 'success',
@@ -75,7 +75,7 @@ module.exports = class UserHandler {
 
   async postUserHandler(request, h) {
     try {
-      // validasi inputan terlebih dahulu
+      this._validator.validateRegisterPayload(request.payload);
       const id = await this._service.addUser(request.payload);
       const response = h.response({
         status: 'success',
@@ -106,7 +106,7 @@ module.exports = class UserHandler {
 
   async deleteUserHandler(request, h) {
     try {
-      // hanya admin yang bisa hapus user
+      await this._authService.isAdmin(request.auth.credentials.idBadge);
       const id = await this._service.destroyUser(request.params.idBadge);
       const response = h.response({
         status: 'success',
@@ -136,8 +136,7 @@ module.exports = class UserHandler {
 
   async putUserHandler(request, h) {
     try {
-      // hanya admin yang bisa mengubah user atau
-      // params idBadge hrs sama dgn user yang login
+      await this._authService.isOwnerUser(request.auth.credentials.idBadge);
       // validasi inputan
       const id = await this._service.updateUser(request.params.id, request.payload);
       const response = h.response({
@@ -168,9 +167,9 @@ module.exports = class UserHandler {
 
   async putPasswordUserHandler(request, h) {
     try {
-      // hanya pemilik login yg bisa update password
-      // validasi inputan
-      await this._service.changePassword('idYangLogin', request.payload);
+      await this._validator.validateChangePassPayload(request.payload);
+      await this._authService.isOwnerUser(request.auth.credentials.idBadge);
+      await this._service.changePassword(request.auth.credentials.idBadge, request.payload);
       const response = h.response({
         status: 'success',
         message: 'Success Edit Password',

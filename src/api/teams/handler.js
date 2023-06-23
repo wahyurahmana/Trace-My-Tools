@@ -2,9 +2,10 @@
 const ClientError = require('../../exceptions/ClientError');
 
 module.exports = class TeamHandler {
-  constructor(service, validator) {
+  constructor(service, validator, authService) {
     this._service = service;
     this._validator = validator;
+    this._authService = authService;
   }
 
   async getTeamHandler(request, h) {
@@ -41,6 +42,7 @@ module.exports = class TeamHandler {
   async postTeamHandler(request, h) {
     try {
       this._validator.validateTeamPayload(request.payload);
+      await this._authService.isAdmin(request.auth.credentials.idBadge);
       const id = await this._service.addTeam(request.payload);
       const response = h.response({
         status: 'success',
@@ -71,6 +73,7 @@ module.exports = class TeamHandler {
 
   async deleteTeamHandler(request, h) {
     try {
+      await this._authService.isAdmin(request.auth.credentials.idBadge);
       const id = await this._service.deleteTeam(request.params.id);
       const response = h.response({
         status: 'success',
@@ -100,7 +103,7 @@ module.exports = class TeamHandler {
 
   async putTeamHandler(request, h) {
     try {
-      // this._validator.validateCameraPayload(request.payload);
+      await this._authService.isAdmin(request.auth.credentials.idBadge);
       const id = await this._service.editTeam(request.params.id, request.payload);
       const response = h.response({
         status: 'success',

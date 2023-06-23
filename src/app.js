@@ -1,22 +1,31 @@
 require('dotenv').config();
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const Inert = require('@hapi/inert');
+const path = require('path');
 
 const validator = require('./validator');
 
 // API
 const teams = require('./api/teams');
 const users = require('./api/users');
+const tools = require('./api/tools');
 
 // Service
 const tokenManager = require('./utilities/jwt');
+const Storage = require('./utilities/storage');
 const TeamService = require('./services/TeamService');
 const UserService = require('./services/UserService');
+const ToolService = require('./services/ToolService');
+const AuthService = require('./services/AuthService');
 
 const init = async () => {
   // INISIALISASI SERVICE
   const teamService = new TeamService();
   const userService = new UserService();
+  const toolService = new ToolService();
+  const authService = new AuthService();
+  const storage = new Storage(path.resolve(__dirname, 'api/uploads/tools'));
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -31,6 +40,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt,
+    },
+    {
+      plugin: Inert,
     },
   ]);
 
@@ -56,6 +68,7 @@ const init = async () => {
     options: {
       service: teamService,
       validator,
+      authService,
     },
   }, {
     plugin: users,
@@ -63,6 +76,14 @@ const init = async () => {
       service: userService,
       validator,
       tokenManager,
+      authService,
+    },
+  }, {
+    plugin: tools,
+    options: {
+      service: toolService,
+      validator,
+      storage,
     },
   }]);
 

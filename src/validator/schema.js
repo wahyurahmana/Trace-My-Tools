@@ -1,28 +1,35 @@
 const Joi = require('joi');
 
-// const CameraPayloadSchema = Joi.object({
-//   nama: Joi.string().required(),
-//   ipAddress: Joi.string().required(),
-//   modelId: Joi.string().required(),
-//   fitur: Joi.string(),
-//   macAddress: Joi.string().required(),
-//   serialNumber: Joi.string().required(),
-//   firmware: Joi.string(),
-//   resolusi: Joi.string(),
-//   autentikasi: Joi.string().required(),
-// });
-
 const TeamPayloadSchema = Joi.object({
   nama: Joi.string().required(),
 });
 
-// const ModelPayloadSchema = Joi.object({
-//   nama: Joi.string().required(),
-//   brandId: Joi.string(),
-// });
+const ImageHeadersSchema = Joi.object({
+  'content-type': Joi.string().valid('image/apng', 'image/jpg', 'image/avif', 'image/gif', 'image/jpeg', 'image/png', 'image/webp').required(),
+}).unknown();
+
+const ToolPayloadSchema = Joi.object({
+  nama: Joi.string().required(),
+  stok: Joi.number().required(),
+});
+
+const RegisterPayloadSchema = Joi.object({
+  idBadge: Joi.string().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().min(8).max(16).required(),
+  noHP: Joi.string().required(),
+  teamId: Joi.string().required(),
+});
+
+const ChangePassPayloadSchema = Joi.object({
+  oldPassword: Joi.string().min(8).max(16).required(),
+  newPassword: Joi.string().min(8).max(16).required(),
+});
 
 module.exports = {
-  // CameraPayloadSchema,
   TeamPayloadSchema,
-  // ModelPayloadSchema,
+  ImageHeadersSchema,
+  ToolPayloadSchema,
+  RegisterPayloadSchema,
+  ChangePassPayloadSchema,
 };

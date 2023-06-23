@@ -33,19 +33,25 @@ module.exports = class UserService {
   }
 
   async addUser(data) {
-    const {
-      idBadge, email, password, noHP, teamId,
-    } = data;
-    const hashPassword = bcrypt.hashSync(password, salt);
-    const query = {
-      text: 'insert into users values ($1, $2, $3, $4, $5, $6) returning id_badge;',
-      values: [idBadge, email, hashPassword, noHP, 'user', teamId],
-    };
-    const result = await this._pool.query(query);
-    if (!result.rows[0].id_badge) {
-      throw new InvariantError('Gagal Menambahkan Data!');
+    try {
+      const {
+        idBadge, email, password, noHP, teamId,
+      } = data;
+      const hashPassword = bcrypt.hashSync(password, salt);
+      const query = {
+        text: 'insert into users values ($1, $2, $3, $4, $5, $6) returning id_badge;',
+        values: [idBadge, email, hashPassword, noHP, 'user', teamId],
+      };
+      const result = await this._pool.query(query);
+      if (!result.rows[0].id_badge) {
+        throw new InvariantError('Gagal Menambahkan Data!');
+      }
+      return result.rows[0].id_badge;
+    } catch (error) {
+      if (error.constraint === 'users_pkey') {
+        throw new InvariantError('Id Badge Telah Ada!');
+      }
     }
-    return result.rows[0].id_badge;
   }
 
   async destroyUser(idBadge) {
@@ -78,7 +84,7 @@ module.exports = class UserService {
   async changePassword(idBadge, data) {
     const { oldPassword, newPassword } = data;
     const user = await this.detailUser(idBadge);
-    const checkOldPassword = bcrypt.compareSync(oldPassword, user.rows[0].password);
+    const checkOldPassword = bcrypt.compareSync(oldPassword, user[0].password);
     if (!checkOldPassword) {
       throw new InvariantError('Password Lama Tidak Cocok!');
     }
