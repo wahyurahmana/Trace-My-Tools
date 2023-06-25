@@ -26,7 +26,23 @@ module.exports = (handler) => [
   {
     method: 'GET',
     path: '/tools/{id}',
-    handler: (request, h) => handler.getToolHandler(request, h),
+    handler: (request, h) => handler.getDetailToolHandler(request, h),
+    options: {
+      auth: 'app_jwt',
+    },
+  },
+  {
+    method: 'DELETE',
+    path: '/tools/{id}',
+    handler: (request, h) => handler.deleteToolByTeamIdHandler(request, h),
+    options: {
+      auth: 'app_jwt',
+    },
+  },
+  {
+    method: 'PUT',
+    path: '/tools/{id}',
+    handler: (request, h) => handler.putToolByTeamIdHandler(request, h),
     options: {
       auth: 'app_jwt',
     },

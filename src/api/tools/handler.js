@@ -109,4 +109,72 @@ module.exports = class ToolHandler {
       return response;
     }
   }
+
+  async deleteToolByTeamIdHandler(request, h) {
+    try {
+      await this._authService.isOwnerToolByTeamId(request.auth.credentials.teamId);
+      const id = await this._service.deleteTool(request.params.id);
+      const response = h.response({
+        status: 'success',
+        message: `Success Delete ID ${id}`,
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async putToolByTeamIdHandler(request, h) {
+    try {
+      const {
+        nama, foto, stok,
+      } = request.payload;
+      this._validator.validateToolPayload({ nama, stok });
+      this._validator.validateImageHeadersPayload(foto.hapi.headers);
+      await this._authService.isOwnerToolByTeamId(request.auth.credentials.teamId);
+      const fileName = await this._storage.writeFile(foto, foto.hapi);
+      const id = await this._service.editTool(request.params.id, {
+        nama, fileName: `http://${process.env.HOST}:${process.env.PORT}/upload/tools/${fileName}`, stok,
+      });
+      const response = h.response({
+        status: 'success',
+        message: `Success Update ID ${id}`,
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
 };

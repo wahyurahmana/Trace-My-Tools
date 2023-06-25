@@ -34,9 +34,9 @@ module.exports = class ToolService {
     return result.rows[0].id;
   }
 
-  async deleteTeam(id) {
+  async deleteTool(id) {
     const query = {
-      text: 'DELETE FROM teams WHERE id = $1 returning id;',
+      text: 'DELETE FROM tools WHERE id = $1 returning id;',
       values: [id],
     };
     const result = await this._pool.query(query);
@@ -46,10 +46,13 @@ module.exports = class ToolService {
     return result.rows[0].id;
   }
 
-  async editTeam(id, data) {
+  async editTool(id, data) {
+    const {
+      nama, fileName, stok,
+    } = data;
     const query = {
-      text: 'UPDATE teams SET nama = $1, WHERE id = $2 returning id',
-      values: [data.nama, id],
+      text: 'UPDATE tools SET nama = $1, foto = $2, stok = $3 WHERE id = $4 returning id',
+      values: [nama, fileName, stok, id],
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
@@ -60,7 +63,7 @@ module.exports = class ToolService {
 
   async detailTool(idTool) {
     const query = {
-      text: 'SELECT tools.*, teams.id as team_id, teams.nama FROM tools INNER JOIN teams ON tools.team_id = teams.id WHERE tools.id =$1;',
+      text: 'SELECT tools.*, teams.id as team_id, teams.nama as nama_team FROM tools INNER JOIN teams ON tools.team_id = teams.id WHERE tools.id =$1;',
       values: [idTool],
     };
     const result = await this._pool.query(query);
