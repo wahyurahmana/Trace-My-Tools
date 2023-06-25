@@ -64,6 +64,6 @@ module.exports = class TeamService {
     if (!result.rows.length) {
       throw new NotFoundError('Data Tidak Ditemukan!');
     }
-    return result.rows[0];
+    return result.rows;
   }
 };

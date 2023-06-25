@@ -22,7 +22,7 @@ module.exports = class UserService {
 
   async detailUser(id) {
     const query = {
-      text: 'select users.*, teams.nama as nama_team from users inner join teams on users.team_id = teams.id where id_badge = $1;',
+      text: 'select users.*, teams.id as team_id, teams.nama as nama_team from users inner join teams on users.team_id = teams.id where id_badge = $1;',
       values: [id],
     };
     const result = await this._pool.query(query);
@@ -51,6 +51,7 @@ module.exports = class UserService {
       if (error.constraint === 'users_pkey') {
         throw new InvariantError('Id Badge Telah Ada!');
       }
+      return error;
     }
   }
 
@@ -66,19 +67,26 @@ module.exports = class UserService {
     return result.rows[0].id_badge;
   }
 
-  async updateUser(idBadge, data) {
-    const {
-      email, noHP, status, teamId,
-    } = data;
-    const query = {
-      text: 'update users set email = $1, no_hp = $2, status = $3, team_id = $4 where id_badge = $5 returning id_badge;',
-      values: [email, noHP, status, teamId, idBadge],
-    };
-    const result = await this._pool.query(query);
-    if (!result.rows[0].id_badge) {
-      throw new NotFoundError('Gagal Mengubah Data. Id Tidak Ditemukan!');
+  async updateUser(id, data) {
+    try {
+      const {
+        idBadge, email, noHP, teamId,
+      } = data;
+      const query = {
+        text: 'update users set id_badge = $1, email = $2, no_hp = $3, team_id = $4 where id_badge = $5 returning id_badge;',
+        values: [idBadge, email, noHP, teamId, idBadge],
+      };
+      const result = await this._pool.query(query);
+      if (!result.rows[0].id_badge) {
+        throw new NotFoundError('Gagal Mengubah Data. Id Tidak Ditemukan!');
+      }
+      return result.rows[0].id_badge;
+    } catch (error) {
+      if (error.constraint === 'users_pkey') {
+        throw new InvariantError('Id Badge Telah Ada!');
+      }
+      return error;
     }
-    return result.rows[0].id_badge;
   }
 
   async changePassword(idBadge, data) {

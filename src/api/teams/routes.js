@@ -32,8 +32,5 @@ module.exports = (handler) => [
     method: 'GET',
     path: '/teams/{id}',
     handler: (request, h) => handler.detailTeamHandler(request, h),
-    options: {
-      auth: 'app_jwt',
-    },
   },
 ];

@@ -30,4 +30,16 @@ module.exports = class AuthService {
     }
     return true;
   }
+
+  async isOwnerToolByTeamId(teamId) {
+    const query = {
+      text: 'select * from tools where team_id = $1;',
+      values: [teamId],
+    };
+    const result = await this._pool.query(query);
+    if (!result.rows.length) {
+      throw new AuthorizationError('Anda Bukan Pemilik Data Ini!');
+    }
+    return true;
+  }
 };

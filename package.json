@@ -2,12 +2,13 @@
   "name": "tmt_trace_my_tools",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/app.js",
     "migrate": "node-pg-migrate",
-    "eslint": "eslint ./src"
+    "eslint": "eslint ./src",
+    "start": "NODE_ENV=production node ./src/app.js"
   },
   "author": "",
   "license": "ISC",

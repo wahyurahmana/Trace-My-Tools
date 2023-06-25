@@ -58,15 +58,15 @@ module.exports = class ToolService {
     return result.rows[0].id;
   }
 
-  async detailTeam(id) {
+  async detailTool(idTool) {
     const query = {
-      text: 'SELECT * FROM teams WHERE id = $1;',
-      values: [id],
+      text: 'SELECT tools.*, teams.id as team_id, teams.nama FROM tools INNER JOIN teams ON tools.team_id = teams.id WHERE tools.id =$1;',
+      values: [idTool],
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
       throw new NotFoundError('Data Tidak Ditemukan!');
     }
-    return result.rows[0];
+    return result.rows;
   }
 };

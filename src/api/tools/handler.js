@@ -2,10 +2,11 @@
 const ClientError = require('../../exceptions/ClientError');
 
 module.exports = class ToolHandler {
-  constructor(service, validator, storage) {
+  constructor(service, validator, storage, authService) {
     this._service = service;
     this._validator = validator;
     this._storage = storage;
+    this._authService = authService;
   }
 
   async getToolHandler(request, h) {
@@ -55,6 +56,38 @@ module.exports = class ToolHandler {
         message: `Success Add ${request.payload.nama} With ID ${id}`,
       });
       response.code(201);
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async getDetailToolHandler(request, h) {
+    try {
+      await this._authService.isOwnerToolByTeamId(request.auth.credentials.teamId);
+      const tool = await this._service.detailTool(request.params.id);
+      const response = h.response({
+        status: 'success',
+        data: {
+          tool: tool[0],
+        },
+      });
       return response;
     } catch (error) {
       if (error instanceof ClientError) {

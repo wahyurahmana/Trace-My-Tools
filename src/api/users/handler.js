@@ -136,8 +136,8 @@ module.exports = class UserHandler {
 
   async putUserHandler(request, h) {
     try {
+      await this._validator.validateUpdateUserPayload(request.payload);
       await this._authService.isOwnerUser(request.auth.credentials.idBadge);
-      // validasi inputan
       const id = await this._service.updateUser(request.params.id, request.payload);
       const response = h.response({
         status: 'success',

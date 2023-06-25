@@ -26,10 +26,18 @@ const ChangePassPayloadSchema = Joi.object({
   newPassword: Joi.string().min(8).max(16).required(),
 });
 
+const UpdateUserPayloadSchema = Joi.object({
+  idBadge: Joi.string().required(),
+  email: Joi.string().email().required(),
+  noHP: Joi.string().required(),
+  teamId: Joi.string().required(),
+});
+
 module.exports = {
   TeamPayloadSchema,
   ImageHeadersSchema,
   ToolPayloadSchema,
   RegisterPayloadSchema,
   ChangePassPayloadSchema,
+  UpdateUserPayloadSchema,
 };

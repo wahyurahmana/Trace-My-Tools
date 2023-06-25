@@ -84,6 +84,7 @@ const init = async () => {
       service: toolService,
       validator,
       storage,
+      authService,
     },
   }]);
 

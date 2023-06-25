@@ -25,6 +25,14 @@ module.exports = (handler) => [
   },
   {
     method: 'GET',
+    path: '/tools/{id}',
+    handler: (request, h) => handler.getToolHandler(request, h),
+    options: {
+      auth: 'app_jwt',
+    },
+  },
+  {
+    method: 'GET',
     path: '/upload/{param*}',
     handler: {
       directory: {

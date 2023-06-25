@@ -137,7 +137,7 @@ module.exports = class TeamHandler {
       const response = h.response({
         status: 'success',
         data: {
-          team,
+          team: team[0],
         },
       });
       return response;
