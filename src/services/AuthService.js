@@ -43,6 +43,7 @@ module.exports = class AuthService {
     return true;
   }
 
+  // validasi kepemilikan pemberi alat untuk ubah status
   async ownerPemberiByTeamId(activityId, teamId) {
     const query = {
       text: 'select * from activities where id = $1 and info -> $2 ->> $3 = $4;',
@@ -50,7 +51,7 @@ module.exports = class AuthService {
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
-      throw new AuthorizationError('Anda Bukan Pemilik Data Ini!');
+      throw new AuthorizationError('Anda Bukan Pemberi Tool!');
     }
     return true;
   }

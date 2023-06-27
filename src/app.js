@@ -10,6 +10,7 @@ const validator = require('./validator');
 const teams = require('./api/teams');
 const users = require('./api/users');
 const tools = require('./api/tools');
+const activities = require('./api/activities');
 
 // Service
 const tokenManager = require('./utilities/jwt');
@@ -18,6 +19,7 @@ const TeamService = require('./services/TeamService');
 const UserService = require('./services/UserService');
 const ToolService = require('./services/ToolService');
 const AuthService = require('./services/AuthService');
+const ActivityService = require('./services/ActivityService');
 
 const init = async () => {
   // INISIALISASI SERVICE
@@ -26,6 +28,7 @@ const init = async () => {
   const toolService = new ToolService();
   const authService = new AuthService();
   const storage = new Storage(path.resolve(__dirname, 'api/uploads/tools'));
+  const activityService = new ActivityService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -84,6 +87,13 @@ const init = async () => {
       service: toolService,
       validator,
       storage,
+      authService,
+    },
+  }, {
+    plugin: activities,
+    options: {
+      service: activityService,
+      validator,
       authService,
     },
   }]);
