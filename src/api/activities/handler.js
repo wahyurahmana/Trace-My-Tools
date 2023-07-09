@@ -101,7 +101,7 @@ module.exports = class TeamHandler {
     }
   }
 
-  async putActivityChangeStatusHandler(request, h) {
+  async patchActivityChangeStatusHandler(request, h) {
     try {
       const {
         teamId,

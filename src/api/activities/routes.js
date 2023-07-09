@@ -1,5 +1,5 @@
 module.exports = (handler) => [
-  {
+  { // used FE
     method: 'GET',
     path: '/activities',
     handler: (request, h) => handler.getActivityHandler(request, h),
@@ -25,8 +25,8 @@ module.exports = (handler) => [
   },
   {
     method: 'PATCH',
-    path: '/activities/change-status/{id}',
-    handler: (request, h) => handler.putActivityChangeStatusHandler(request, h),
+    path: '/activities/{id}',
+    handler: (request, h) => handler.patchActivityChangeStatusHandler(request, h),
     options: {
       auth: 'app_jwt',
     },

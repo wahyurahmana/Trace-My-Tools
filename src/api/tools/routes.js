@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = (handler) => [
-  {
+  { // used FE
     method: 'GET',
     path: '/tools',
     handler: (request, h) => handler.getToolHandler(request, h),
@@ -9,7 +9,7 @@ module.exports = (handler) => [
       auth: 'app_jwt',
     },
   },
-  {
+  { // used FE
     method: 'POST',
     path: '/tools',
     handler: (request, h) => handler.postToolHandler(request, h),
@@ -31,7 +31,7 @@ module.exports = (handler) => [
       auth: 'app_jwt',
     },
   },
-  {
+  { // used FE
     method: 'DELETE',
     path: '/tools/{id}',
     handler: (request, h) => handler.deleteToolByTeamIdHandler(request, h),
@@ -47,16 +47,13 @@ module.exports = (handler) => [
       auth: 'app_jwt',
     },
   },
-  {
+  { // used FE
     method: 'GET',
     path: '/upload/{param*}',
     handler: {
       directory: {
         path: path.resolve(__dirname, '../uploads'),
       },
-    },
-    options: {
-      auth: 'app_jwt',
     },
   },
 ];

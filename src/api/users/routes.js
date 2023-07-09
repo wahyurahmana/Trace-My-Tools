@@ -15,12 +15,20 @@ module.exports = (handler) => [
       auth: 'app_jwt',
     },
   },
-  {
+  { // used FE
     method: 'POST',
     path: '/register',
     handler: (request, h) => handler.postUserHandler(request, h),
   },
-  {
+  { // used FE
+    method: 'GET',
+    path: '/users-list',
+    handler: (request, h) => handler.getAllEmailWithTeamHandler(request, h),
+    options: {
+      auth: 'app_jwt',
+    },
+  },
+  { // used FE
     method: 'POST',
     path: '/login',
     handler: (request, h) => handler.loginHandler(request, h),

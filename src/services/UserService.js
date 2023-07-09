@@ -32,7 +32,7 @@ module.exports = class UserService {
     return result.rows;
   }
 
-  async addUser(data) {
+  async addUser(data) { // used FE
     try {
       const {
         idBadge, email, password, noHP, teamId,
@@ -67,10 +67,10 @@ module.exports = class UserService {
     return result.rows[0].id_badge;
   }
 
-  async updateUser(id, data) {
+  async updateUser(idBadge, data) {
     try {
       const {
-        idBadge, email, noHP, teamId,
+        email, noHP, teamId,
       } = data;
       const query = {
         text: 'update users set id_badge = $1, email = $2, no_hp = $3, team_id = $4 where id_badge = $5 returning id_badge;',
@@ -122,5 +122,24 @@ module.exports = class UserService {
       throw new AuthenticationError('Id Badge/Password Salah!');
     }
     return { idBadge: user.rows[0].id_badge, teamId: user.rows[0].team_id };
+  }
+
+  async getAllEmailWithTeam(teamId) {
+    const queryListPeminjam = {
+      text: 'select users.id_badge, users.email, teams.id as team_id, teams.id as team_id, teams.nama from users inner join teams on users.team_id = teams.id where users.team_id not in ($1);',
+      values: [teamId],
+    };
+    const listPeminjam = await this._pool.query(queryListPeminjam);
+
+    const queryListPemberi = {
+      text: 'select users.id_badge, users.email, teams.id as team_id, teams.id as team_id, teams.nama from users inner join teams on users.team_id = teams.id where users.team_id in ($1);',
+      values: [teamId],
+    };
+    const listPemberi = await this._pool.query(queryListPemberi);
+    const result = {
+      listPeminjam: listPeminjam.rows,
+      listPemberi: listPemberi.rows,
+    };
+    return result;
   }
 };

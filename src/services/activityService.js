@@ -11,7 +11,7 @@ module.exports = class ActivityService {
 
   async getAllActivity(teamId) {
     // melihat semua daftar aktivitas dari tools yang user login pinjam kepada tim lain
-    const queryPeminjam = {
+    const queryPinjam = {
       text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3;',
       values: ['peminjam', 'team', teamId],
     };
@@ -20,7 +20,7 @@ module.exports = class ActivityService {
       text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3;',
       values: ['pemberi', 'team', teamId],
     };
-    const resultPinjam = await this._pool.query(queryPeminjam);
+    const resultPinjam = await this._pool.query(queryPinjam);
     const resultPemberi = await this._pool.query(queryPemberi);
     const result = {
       listPinjaman: resultPinjam.rows,
@@ -32,11 +32,21 @@ module.exports = class ActivityService {
   async addActivity(data) {
     const id = nanoid(16);
     const {
-      toolId, quantity, createdAt, info,
+      toolId, quantity, createdAt, peminjamEmail, teamPeminjam, pemberiEmail, teamPemberi,
     } = data;
+    const info = {
+      peminjam: {
+        team: teamPeminjam,
+        user: peminjamEmail,
+      },
+      pemberi: {
+        team: teamPemberi,
+        user: pemberiEmail,
+      },
+    };
     const query = {
       text: 'insert into activities (id, tool_id, quantity, created_at, status, info) values ($1, $2, $3, $4, $5, $6) returning id;',
-      values: [id, toolId, quantity, createdAt, false, info],
+      values: [id, toolId, quantity, createdAt, false, JSON.stringify(info)],
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
@@ -63,7 +73,7 @@ module.exports = class ActivityService {
       values: [status, idActivity],
     };
     const result = await this._pool.query(query);
-    console.log(result);
+
     if (!result.rows.length) {
       throw new NotFoundError('Gagal Mengubah Data. Id Tidak Ditemukan!');
     }

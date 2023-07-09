@@ -1,5 +1,5 @@
 module.exports = (handler) => [
-  {
+  { // used FE
     method: 'GET',
     path: '/teams',
     handler: (request, h) => handler.getTeamHandler(request, h),

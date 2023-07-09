@@ -138,7 +138,7 @@ module.exports = class UserHandler {
     try {
       await this._validator.validateUpdateUserPayload(request.payload);
       await this._authService.isOwnerUser(request.auth.credentials.idBadge);
-      const id = await this._service.updateUser(request.params.id, request.payload);
+      const id = await this._service.updateUser(request.params.idBadge, request.payload);
       const response = h.response({
         status: 'success',
         message: `Success Edit ID ${id}`,
@@ -203,6 +203,35 @@ module.exports = class UserHandler {
       const response = h.response({
         status: 'success',
         token,
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async getAllEmailWithTeamHandler(request, h) {
+    try {
+      const users = await this._service.getAllEmailWithTeam(request.auth.credentials.teamId);
+      const response = h.response({
+        status: 'success',
+        data: users,
       });
       return response;
     } catch (error) {
