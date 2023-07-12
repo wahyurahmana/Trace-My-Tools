@@ -12,12 +12,12 @@ module.exports = class ActivityService {
   async getAllActivity(teamId) {
     // melihat semua daftar aktivitas dari tools yang user login pinjam kepada tim lain
     const queryPinjam = {
-      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3;',
+      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 order by activities.id DESC;',
       values: ['peminjam', 'team', teamId],
     };
     // melihat semua daftar aktivitas dari tools yang user memberikan pinjaman tools
     const queryPemberi = {
-      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3;',
+      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 order by activities.id DESC;',
       values: ['pemberi', 'team', teamId],
     };
     const resultPinjam = await this._pool.query(queryPinjam);
@@ -32,7 +32,7 @@ module.exports = class ActivityService {
   async addActivity(data) {
     const id = nanoid(16);
     const {
-      toolId, quantity, createdAt, peminjamEmail, teamPeminjam, pemberiEmail, teamPemberi,
+      toolId, createdAt, peminjamEmail, teamPeminjam, pemberiEmail, teamPemberi,
     } = data;
     const info = {
       peminjam: {
@@ -45,8 +45,8 @@ module.exports = class ActivityService {
       },
     };
     const query = {
-      text: 'insert into activities (id, tool_id, quantity, created_at, status, info) values ($1, $2, $3, $4, $5, $6) returning id;',
-      values: [id, toolId, quantity, createdAt, false, JSON.stringify(info)],
+      text: 'insert into activities (id, tool_id, created_at, status, info) values ($1, $2, $3, $4, $5) returning id;',
+      values: [id, toolId, createdAt, false, JSON.stringify(info)],
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {

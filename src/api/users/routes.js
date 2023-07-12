@@ -7,7 +7,7 @@ module.exports = (handler) => [
       auth: 'app_jwt',
     },
   },
-  {
+  { // used FE
     method: 'POST',
     path: '/users/change-password',
     handler: (request, h) => handler.putPasswordUserHandler(request, h),

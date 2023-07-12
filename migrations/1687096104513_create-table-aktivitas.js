@@ -15,10 +15,6 @@ exports.up = (pgm) => {
       references: 'tools',
       referencesConstraintName: 'fk_tool_id',
     },
-    quantity: {
-      type: 'INT',
-      notNull: true,
-    },
     created_at: {
       type: 'TIMESTAMP',
       notNull: true,

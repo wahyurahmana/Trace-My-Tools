@@ -23,7 +23,7 @@ module.exports = (handler) => [
       },
     },
   },
-  {
+  { // used FE
     method: 'GET',
     path: '/tools/{id}',
     handler: (request, h) => handler.getDetailToolHandler(request, h),
@@ -39,12 +39,18 @@ module.exports = (handler) => [
       auth: 'app_jwt',
     },
   },
-  {
+  { // used FE
     method: 'PUT',
     path: '/tools/{id}',
     handler: (request, h) => handler.putToolByTeamIdHandler(request, h),
     options: {
       auth: 'app_jwt',
+      payload: {
+        allow: 'multipart/form-data',
+        multipart: true,
+        output: 'stream',
+        maxBytes: 512000,
+      },
     },
   },
   { // used FE

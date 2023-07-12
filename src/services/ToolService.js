@@ -21,11 +21,11 @@ module.exports = class ToolService {
   async addTool(data) {
     const id = `tool-${nanoid(16)}`;
     const {
-      nama, fileName, stok, teamId,
+      nama, fileName, teamId,
     } = data;
     const query = {
-      text: 'INSERT INTO tools VALUES ($1, $2, $3, $4, $5) returning id;',
-      values: [id, nama, fileName, stok, teamId],
+      text: 'INSERT INTO tools VALUES ($1, $2, $3, $4) returning id;',
+      values: [id, nama, fileName, teamId],
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
@@ -48,11 +48,11 @@ module.exports = class ToolService {
 
   async editTool(id, data) {
     const {
-      nama, fileName, stok,
+      nama, fileName,
     } = data;
     const query = {
-      text: 'UPDATE tools SET nama = $1, foto = $2, stok = $3 WHERE id = $4 returning id',
-      values: [nama, fileName, stok, id],
+      text: 'UPDATE tools SET nama = $1, foto = $2 WHERE id = $3 returning id',
+      values: [nama, fileName, id],
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
@@ -63,7 +63,7 @@ module.exports = class ToolService {
 
   async detailTool(idTool) {
     const query = {
-      text: 'SELECT tools.*, teams.id as team_id, teams.nama as nama_team FROM tools INNER JOIN teams ON tools.team_id = teams.id WHERE tools.id =$1;',
+      text: 'SELECT * FROM tools WHERE id =$1;',
       values: [idTool],
     };
     const result = await this._pool.query(query);

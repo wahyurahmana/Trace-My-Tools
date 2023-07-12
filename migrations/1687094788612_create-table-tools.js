@@ -18,10 +18,6 @@ exports.up = (pgm) => {
     foto: {
       type: 'TEXT',
     },
-    stok: {
-      type: 'INT',
-      notNull: true,
-    },
     team_id: {
       type: 'VARCHAR(50)',
       references: 'teams',

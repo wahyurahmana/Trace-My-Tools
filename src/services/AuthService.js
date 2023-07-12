@@ -19,16 +19,19 @@ module.exports = class AuthService {
     return true;
   }
 
-  async isOwnerUser(idBadge) {
-    const query = {
-      text: 'select * from users where id_badge = $1;',
-      values: [idBadge],
-    };
-    const result = await this._pool.query(query);
-    if (!result.rows.length) {
+  async isOwnerUser(idBadge, idParam) {
+    if (idBadge !== idParam) {
       throw new AuthorizationError('Anda Bukan Pemilik Data Ini!');
     }
     return true;
+    // const query = {
+    //   text: 'select * from users where id_badge = $1;',
+    //   values: [idBadge],
+    // };
+    // const result = await this._pool.query(query);
+    // if (!result.rows.length) {
+    //   throw new AuthorizationError('Anda Bukan Pemilik Data Ini!');
+    // }
   }
 
   async isOwnerToolByTeamId(toolId, teamId) {

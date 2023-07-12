@@ -137,8 +137,8 @@ module.exports = class UserHandler {
   async putUserHandler(request, h) {
     try {
       await this._validator.validateUpdateUserPayload(request.payload);
-      await this._authService.isOwnerUser(request.auth.credentials.idBadge);
-      const id = await this._service.updateUser(request.params.idBadge, request.payload);
+      await this._authService.isOwnerUser(request.auth.credentials.idBadge, request.params.idBadge);
+      const id = await this._service.updateUser(request.auth.credentials.idBadge, request.payload);
       const response = h.response({
         status: 'success',
         message: `Success Edit ID ${id}`,
@@ -168,7 +168,6 @@ module.exports = class UserHandler {
   async putPasswordUserHandler(request, h) {
     try {
       await this._validator.validateChangePassPayload(request.payload);
-      await this._authService.isOwnerUser(request.auth.credentials.idBadge);
       await this._service.changePassword(request.auth.credentials.idBadge, request.payload);
       const response = h.response({
         status: 'success',

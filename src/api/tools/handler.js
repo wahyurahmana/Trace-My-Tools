@@ -43,13 +43,13 @@ module.exports = class ToolHandler {
   async postToolHandler(request, h) {
     try {
       const {
-        nama, foto, stok,
+        nama, foto,
       } = request.payload;
-      this._validator.validateToolPayload({ nama, stok });
+      this._validator.validateToolPayload({ nama });
       this._validator.validateImageHeadersPayload(foto.hapi.headers);
       const fileName = await this._storage.writeFile(foto, foto.hapi);
       const id = await this._service.addTool({
-        nama, fileName: `http://${process.env.HOST}:${process.env.PORT}/upload/tools/${fileName}`, stok, teamId: request.auth.credentials.teamId,
+        nama, fileName: `http://${process.env.HOST}:${process.env.PORT}/upload/tools/${fileName}`, teamId: request.auth.credentials.teamId,
       });
       const response = h.response({
         status: 'success',
@@ -145,15 +145,15 @@ module.exports = class ToolHandler {
   async putToolByTeamIdHandler(request, h) {
     try {
       const {
-        nama, foto, stok,
+        nama, foto,
       } = request.payload;
       const { teamId } = request.auth.credentials;
-      this._validator.validateToolPayload({ nama, stok });
+      this._validator.validateToolPayload({ nama });
       this._validator.validateImageHeadersPayload(foto.hapi.headers);
       await this._authService.isOwnerToolByTeamId(request.params.id, teamId);
       const fileName = await this._storage.writeFile(foto, foto.hapi);
       const id = await this._service.editTool(request.params.id, {
-        nama, fileName: `http://${process.env.HOST}:${process.env.PORT}/upload/tools/${fileName}`, stok,
+        nama, fileName: `http://${process.env.HOST}:${process.env.PORT}/upload/tools/${fileName}`,
       });
       const response = h.response({
         status: 'success',

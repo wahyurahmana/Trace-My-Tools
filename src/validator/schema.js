@@ -10,7 +10,6 @@ const ImageHeadersSchema = Joi.object({
 
 const ToolPayloadSchema = Joi.object({
   nama: Joi.string().required(),
-  stok: Joi.number().required(),
 });
 
 const RegisterPayloadSchema = Joi.object({
