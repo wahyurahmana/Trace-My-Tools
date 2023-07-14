@@ -2,10 +2,11 @@
 const ClientError = require('../../exceptions/ClientError');
 
 module.exports = class TeamHandler {
-  constructor(service, validator, authService) {
+  constructor(service, validator, authService, storage) {
     this._service = service;
     this._validator = validator;
     this._authService = authService;
+    this._storage = storage;
   }
 
   async getActivityHandler(request, h) {
@@ -40,6 +41,9 @@ module.exports = class TeamHandler {
   async postActivityHandler(request, h) {
     try {
       // this._validator.validateTeamPayload(request.payload);
+      this._validator.validateImageHeadersPayload(request.payload.buktiPinjam.hapi.headers);
+      const fileNameBuktiPinjam = await this._storage.writeFile(request.payload.buktiPinjam, request.payload.buktiPinjam.hapi, 'pinjam');
+      request.payload.buktiPinjam = `http://${process.env.HOST}:${process.env.PORT}/uploads/${fileNameBuktiPinjam}`;
       const id = await this._service.addActivity(request.payload);
       const response = h.response({
         status: 'success',

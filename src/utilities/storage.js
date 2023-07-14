@@ -11,8 +11,8 @@ class StorageService {
     }
   }
 
-  writeFile(file, meta) {
-    const filename = `file-${nanoid(8)}-${meta.filename}`;
+  writeFile(file, meta, from) {
+    const filename = `${from}-${nanoid(8)}-${meta.filename}`;
     const path = `${this._folder}/${filename}`;
 
     const fileStream = fs.createWriteStream(path);

@@ -19,7 +19,7 @@ module.exports = (handler) => [
         allow: 'multipart/form-data',
         multipart: true,
         output: 'stream',
-        maxBytes: 512000,
+        maxBytes: 5242880,
       },
     },
   },
@@ -49,16 +49,16 @@ module.exports = (handler) => [
         allow: 'multipart/form-data',
         multipart: true,
         output: 'stream',
-        maxBytes: 512000,
+        maxBytes: 5242880,
       },
     },
   },
   { // used FE
     method: 'GET',
-    path: '/upload/{param*}',
+    path: '/{param*}',
     handler: {
       directory: {
-        path: path.resolve(__dirname, '../uploads'),
+        path: path.resolve(__dirname, '../'),
       },
     },
   },

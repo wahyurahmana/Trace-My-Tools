@@ -11,7 +11,7 @@ module.exports = class ToolService {
 
   async getAllTool(teamId) {
     const query = {
-      text: 'SELECT tools.*, teams.nama as nama_team FROM tools INNER JOIN teams ON tools.team_id = teams.id WHERE tools.team_id = $1;',
+      text: 'SELECT tools.*, teams.nama as nama_team FROM tools INNER JOIN teams ON tools.team_id = teams.id WHERE tools.team_id = $1 ORDER BY tools.id DESC;',
       values: [teamId],
     };
     const result = await this._pool.query(query);

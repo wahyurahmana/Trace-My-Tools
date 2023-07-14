@@ -27,6 +27,13 @@ exports.up = (pgm) => {
       type: 'JSON',
       notNull: true,
     },
+    bukti_pinjam: {
+      type: 'TEXT',
+      notNull: true,
+    },
+    bukti_terima: {
+      type: 'TEXT',
+    },
   });
 };
 

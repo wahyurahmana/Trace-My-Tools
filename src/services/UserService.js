@@ -50,8 +50,13 @@ module.exports = class UserService {
     } catch (error) {
       if (error.constraint === 'users_pkey') {
         throw new InvariantError('Id Badge Telah Ada!');
+      } else if (error.constraint === 'users_email_key') {
+        throw new InvariantError('Email Telah Ada');
+      } else if (error.constraint === 'users_no_hp_key') {
+        throw new InvariantError('No HP Telah Ada');
+      } else {
+        throw new InvariantError('Gagal Menambahkan Data!');
       }
-      return error;
     }
   }
 

@@ -27,7 +27,7 @@ const init = async () => {
   const userService = new UserService();
   const toolService = new ToolService();
   const authService = new AuthService();
-  const storage = new Storage(path.resolve(__dirname, 'api/uploads/tools'));
+  const storage = new Storage(path.resolve(__dirname, 'api/uploads'));
   const activityService = new ActivityService();
 
   const server = Hapi.server({
@@ -94,6 +94,7 @@ const init = async () => {
     options: {
       service: activityService,
       validator,
+      storage,
       authService,
     },
   }]);

@@ -32,7 +32,7 @@ module.exports = class ActivityService {
   async addActivity(data) {
     const id = nanoid(16);
     const {
-      toolId, createdAt, peminjamEmail, teamPeminjam, pemberiEmail, teamPemberi,
+      toolId, createdAt, peminjamEmail, teamPeminjam, pemberiEmail, teamPemberi, buktiPinjam,
     } = data;
     const info = {
       peminjam: {
@@ -45,8 +45,8 @@ module.exports = class ActivityService {
       },
     };
     const query = {
-      text: 'insert into activities (id, tool_id, created_at, status, info) values ($1, $2, $3, $4, $5) returning id;',
-      values: [id, toolId, createdAt, false, JSON.stringify(info)],
+      text: 'insert into activities (id, tool_id, created_at, status, info, bukti_pinjam) values ($1, $2, $3, $4, $5, $6) returning id;',
+      values: [id, toolId, createdAt, false, JSON.stringify(info), buktiPinjam],
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
