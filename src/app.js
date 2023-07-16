@@ -27,7 +27,7 @@ const init = async () => {
   const userService = new UserService();
   const toolService = new ToolService();
   const authService = new AuthService();
-  const storage = new Storage(path.resolve(__dirname, 'api/uploads'));
+  const storage = new Storage(path.resolve(__dirname, 'api/uploads/img'));
   const activityService = new ActivityService();
 
   const server = Hapi.server({

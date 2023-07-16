@@ -55,10 +55,10 @@ module.exports = (handler) => [
   },
   { // used FE
     method: 'GET',
-    path: '/{param*}',
+    path: '/uploads/{param*}',
     handler: {
       directory: {
-        path: path.resolve(__dirname, '../'),
+        path: path.resolve(__dirname, '../uploads/'),
       },
     },
   },

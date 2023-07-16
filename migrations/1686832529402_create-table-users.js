@@ -32,6 +32,8 @@ exports.up = (pgm) => {
       type: 'VARCHAR(50)',
       references: 'teams',
       referencesConstraintName: 'fk_team_id',
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
   });
 };

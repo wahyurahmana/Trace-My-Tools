@@ -43,7 +43,7 @@ module.exports = class TeamHandler {
       // this._validator.validateTeamPayload(request.payload);
       this._validator.validateImageHeadersPayload(request.payload.buktiPinjam.hapi.headers);
       const fileNameBuktiPinjam = await this._storage.writeFile(request.payload.buktiPinjam, request.payload.buktiPinjam.hapi, 'pinjam');
-      request.payload.buktiPinjam = `http://${process.env.HOST}:${process.env.PORT}/uploads/${fileNameBuktiPinjam}`;
+      request.payload.buktiPinjam = `http://${process.env.HOST}:${process.env.PORT}/uploads/img/${fileNameBuktiPinjam}`;
       const id = await this._service.addActivity(request.payload);
       const response = h.response({
         status: 'success',
@@ -110,11 +110,17 @@ module.exports = class TeamHandler {
       const {
         teamId,
       } = request.auth.credentials;
+      const {
+        id,
+      } = request.params;
       await this._authService.ownerPemberiByTeamId(request.params.id, teamId);
-      const id = await this._service.changeStatus(request.params.id, request.payload.status);
+      this._validator.validateImageHeadersPayload(request.payload.buktiTerima.hapi.headers);
+      const fileNameBuktiTerima = await this._storage.writeFile(request.payload.buktiTerima, request.payload.buktiTerima.hapi, 'terima');
+      const buktiTerima = `http://${process.env.HOST}:${process.env.PORT}/uploads/img/${fileNameBuktiTerima}`;
+      const idUpdate = await this._service.changeStatus(id, request.payload.status, buktiTerima);
       const response = h.response({
         status: 'success',
-        message: `Success Update Status ID ${id}`,
+        message: `Success Update Status ID ${idUpdate}`,
       });
       return response;
     } catch (error) {

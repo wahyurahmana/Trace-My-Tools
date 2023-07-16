@@ -35,6 +35,12 @@ module.exports = (handler) => [
     handler: (request, h) => handler.patchActivityChangeStatusHandler(request, h),
     options: {
       auth: 'app_jwt',
+      payload: {
+        allow: 'multipart/form-data',
+        multipart: true,
+        output: 'stream',
+        maxBytes: 5242880,
+      },
     },
   },
 ];

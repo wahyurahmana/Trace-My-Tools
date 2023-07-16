@@ -67,10 +67,10 @@ module.exports = class ActivityService {
     return result.rows[0].id;
   }
 
-  async changeStatus(idActivity, status) {
+  async changeStatus(idActivity, status, buktiTerima) {
     const query = {
-      text: 'UPDATE activities SET status = $1 WHERE id = $2 returning id;',
-      values: [status, idActivity],
+      text: 'UPDATE activities SET status = $1, bukti_terima = $2 WHERE id = $3 returning id;',
+      values: [status, buktiTerima, idActivity],
     };
     const result = await this._pool.query(query);
 

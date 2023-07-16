@@ -14,9 +14,11 @@ exports.up = (pgm) => {
       type: 'VARCHAR(50)',
       references: 'tools',
       referencesConstraintName: 'fk_tool_id',
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     created_at: {
-      type: 'TIMESTAMP',
+      type: 'timestamptz',
       notNull: true,
     },
     status: {
