@@ -14,6 +14,7 @@ const activities = require('./api/activities');
 
 // Service
 const tokenManager = require('./utilities/jwt');
+const senderWA = require('./utilities/senderWA');
 const Storage = require('./utilities/storage');
 const TeamService = require('./services/TeamService');
 const UserService = require('./services/UserService');
@@ -60,7 +61,7 @@ const init = async () => {
     validate: (artifacts) => ({
       isValid: true,
       credentials: {
-        idBadge: artifacts.decoded.payload.idBadge,
+        idUser: artifacts.decoded.payload.idUser,
         teamId: artifacts.decoded.payload.teamId,
       },
     }),
@@ -96,6 +97,7 @@ const init = async () => {
       validator,
       storage,
       authService,
+      senderWA,
     },
   }]);
 

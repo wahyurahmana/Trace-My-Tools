@@ -2,11 +2,12 @@
 const ClientError = require('../../exceptions/ClientError');
 
 module.exports = class TeamHandler {
-  constructor(service, validator, authService, storage) {
+  constructor(service, validator, authService, storage, senderWA) {
     this._service = service;
     this._validator = validator;
     this._authService = authService;
     this._storage = storage;
+    this._senderWA = senderWA;
   }
 
   async getActivityHandler(request, h) {
