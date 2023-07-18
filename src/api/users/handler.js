@@ -11,7 +11,7 @@ module.exports = class UserHandler {
 
   async getUserHandler(request, h) {
     try {
-      await this._authService.isAdmin(request.auth.credentials.idBadge);
+      await this._authService.isAdmin(request.auth.credentials.idUser);
       const users = await this._service.allUsers();
       const response = h.response({
         status: 'success',
@@ -43,8 +43,8 @@ module.exports = class UserHandler {
 
   async detailUserHandler(request, h) {
     try {
-      await this._authService.isOwnerUser(request.auth.credentials.idBadge);
-      const user = await this._service.detailUser(request.params.idBadge);
+      await this._authService.isOwnerUser(request.auth.credentials.idUser);
+      const user = await this._service.detailUser(request.params.idUser);
       const response = h.response({
         status: 'success',
         data: {
@@ -106,8 +106,8 @@ module.exports = class UserHandler {
 
   async deleteUserHandler(request, h) {
     try {
-      await this._authService.isAdmin(request.auth.credentials.idBadge);
-      const id = await this._service.destroyUser(request.params.idBadge);
+      await this._authService.isAdmin(request.auth.credentials.idUser);
+      const id = await this._service.destroyUser(request.params.idUser);
       const response = h.response({
         status: 'success',
         message: `Success Delete ID ${id}`,
@@ -137,8 +137,8 @@ module.exports = class UserHandler {
   async putUserHandler(request, h) {
     try {
       await this._validator.validateUpdateUserPayload(request.payload);
-      await this._authService.isOwnerUser(request.auth.credentials.idBadge, request.params.idBadge);
-      const id = await this._service.updateUser(request.auth.credentials.idBadge, request.payload);
+      await this._authService.isOwnerUser(request.auth.credentials.idUser, request.params.idUser);
+      const id = await this._service.updateUser(request.auth.credentials.idUser, request.payload);
       const response = h.response({
         status: 'success',
         message: `Success Edit ID ${id}`,
@@ -168,7 +168,7 @@ module.exports = class UserHandler {
   async putPasswordUserHandler(request, h) {
     try {
       await this._validator.validateChangePassPayload(request.payload);
-      await this._service.changePassword(request.auth.credentials.idBadge, request.payload);
+      await this._service.changePassword(request.auth.credentials.idUser, request.payload);
       const response = h.response({
         status: 'success',
         message: 'Success Edit Password',
@@ -197,7 +197,7 @@ module.exports = class UserHandler {
 
   async loginHandler(request, h) {
     try {
-      const payload = await this._service.checkIdBadgeAndPass(request.payload);
+      const payload = await this._service.checkidUserAndPass(request.payload);
       const token = this._tokenManager.generate(payload);
       const response = h.response({
         status: 'success',

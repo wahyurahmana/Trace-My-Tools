@@ -42,7 +42,7 @@ module.exports = class TeamHandler {
   async postTeamHandler(request, h) {
     try {
       this._validator.validateTeamPayload(request.payload);
-      await this._authService.isAdmin(request.auth.credentials.idBadge);
+      await this._authService.isAdmin(request.auth.credentials.idUser);
       const id = await this._service.addTeam(request.payload);
       const response = h.response({
         status: 'success',
@@ -73,7 +73,7 @@ module.exports = class TeamHandler {
 
   async deleteTeamHandler(request, h) {
     try {
-      await this._authService.isAdmin(request.auth.credentials.idBadge);
+      await this._authService.isAdmin(request.auth.credentials.idUser);
       const id = await this._service.deleteTeam(request.params.id);
       const response = h.response({
         status: 'success',
@@ -103,7 +103,7 @@ module.exports = class TeamHandler {
 
   async putTeamHandler(request, h) {
     try {
-      await this._authService.isAdmin(request.auth.credentials.idBadge);
+      await this._authService.isAdmin(request.auth.credentials.idUser);
       const id = await this._service.editTeam(request.params.id, request.payload);
       const response = h.response({
         status: 'success',

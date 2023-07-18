@@ -42,15 +42,21 @@ module.exports = class TeamHandler {
   async postActivityHandler(request, h) {
     try {
       // this._validator.validateTeamPayload(request.payload);
+      await this._service.cekStatusToolId(request.payload.toolId);
       this._validator.validateImageHeadersPayload(request.payload.buktiPinjam.hapi.headers);
       const fileNameBuktiPinjam = await this._storage.writeFile(request.payload.buktiPinjam, request.payload.buktiPinjam.hapi, 'pinjam');
       request.payload.buktiPinjam = `http://${process.env.HOST}:${process.env.PORT}/uploads/img/${fileNameBuktiPinjam}`;
-      const id = await this._service.addActivity(request.payload);
+      const result = await this._service.addActivity(request.payload);
       const response = h.response({
         status: 'success',
-        message: `Success Add ${request.payload.nama} With ID ${id}`,
+        message: `Success Add ${request.payload.nama} With ID ${result.id}`,
       });
       response.code(201);
+      const peminjam = await this._service.detailUserWithEmail(result.info.peminjam.user);
+      const pemberi = await this._service.detailUserWithEmail(result.info.pemberi.user);
+      this._senderWA.singleSend(peminjam.no_hp, `Halo ${result.info.peminjam.user}, Anda Saat Ini Sedang Meminjam Alat Di ${pemberi.email}. Jangan Lupa Dikembalikan Sebelum Jam 4 yaa.\nSilahkan Cek Di [nama_website]`);
+      this._senderWA.singleSend(pemberi.no_hp, `Halo ${result.info.pemberi.user}, Anda Saat Ini Sedang Meminjamkan Alat Kepada ${peminjam.email}.\nSilahkan Cek Di [nama_website]`);
+
       return response;
     } catch (error) {
       if (error instanceof ClientError) {

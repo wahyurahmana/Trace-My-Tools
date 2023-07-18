@@ -13,7 +13,6 @@ const ToolPayloadSchema = Joi.object({
 });
 
 const RegisterPayloadSchema = Joi.object({
-  idBadge: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(8).max(16).required(),
   noHP: Joi.string().required(),
@@ -26,7 +25,7 @@ const ChangePassPayloadSchema = Joi.object({
 });
 
 const UpdateUserPayloadSchema = Joi.object({
-  idBadge: Joi.string().required(),
+  idUser: Joi.string().required(),
   email: Joi.string().email().required(),
   noHP: Joi.string().required(),
   teamId: Joi.string().required(),

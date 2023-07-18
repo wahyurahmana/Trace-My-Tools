@@ -114,6 +114,7 @@ module.exports = class ToolHandler {
   async deleteToolByTeamIdHandler(request, h) {
     try {
       const { teamId } = request.auth.credentials;
+      await this._service.cekStatusToolId(request.params.id);
       await this._authService.isOwnerToolByTeamId(request.params.id, teamId);
       const id = await this._service.deleteTool(request.params.id);
       const response = h.response({
@@ -148,6 +149,7 @@ module.exports = class ToolHandler {
         nama, foto,
       } = request.payload;
       const { teamId } = request.auth.credentials;
+      await this._service.cekStatusToolId(request.params.id);
       this._validator.validateToolPayload({ nama });
       this._validator.validateImageHeadersPayload(foto.hapi.headers);
       await this._authService.isOwnerToolByTeamId(request.params.id, teamId);

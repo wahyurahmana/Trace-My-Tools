@@ -72,4 +72,17 @@ module.exports = class ToolService {
     }
     return result.rows;
   }
+
+  // redundan dengan cek status tool id activity service
+  async cekStatusToolId(toolId) {
+    const query = {
+      text: 'select * from activities where status = false and tool_id = $1;',
+      values: [toolId],
+    };
+    const result = await this._pool.query(query);
+    if (result.rows.length) {
+      throw new InvariantError('Alat Masih Dipinjam!');
+    }
+    return true;
+  }
 };

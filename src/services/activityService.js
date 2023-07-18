@@ -12,12 +12,12 @@ module.exports = class ActivityService {
   async getAllActivity(teamId) {
     // melihat semua daftar aktivitas dari tools yang user login pinjam kepada tim lain
     const queryPinjam = {
-      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 order by activities.id DESC;',
+      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 ORDER BY activities.id DESC;',
       values: ['peminjam', 'team', teamId],
     };
     // melihat semua daftar aktivitas dari tools yang user memberikan pinjaman tools
     const queryPemberi = {
-      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 order by activities.id DESC;',
+      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 ORDER BY activities.id DESC;',
       values: ['pemberi', 'team', teamId],
     };
     const resultPinjam = await this._pool.query(queryPinjam);
@@ -45,14 +45,14 @@ module.exports = class ActivityService {
       },
     };
     const query = {
-      text: 'insert into activities (id, tool_id, created_at, status, info, bukti_pinjam) values ($1, $2, $3, $4, $5, $6) returning id;',
+      text: 'insert into activities (id, tool_id, created_at, status, info, bukti_pinjam) values ($1, $2, $3, $4, $5, $6) returning *;',
       values: [id, toolId, createdAt, false, JSON.stringify(info), buktiPinjam],
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
       throw new InvariantError('Gagal Menambahkan Data!');
     }
-    return result.rows[0].id;
+    return result.rows[0];
   }
 
   async deleteActivity(id) {
@@ -78,6 +78,31 @@ module.exports = class ActivityService {
       throw new NotFoundError('Gagal Mengubah Data. Id Tidak Ditemukan!');
     }
     return result.rows[0].id;
+  }
+
+  async cekStatusToolId(toolId) {
+    const query = {
+      text: 'select * from activities where status = false and tool_id = $1;',
+      values: [toolId],
+    };
+    const result = await this._pool.query(query);
+    if (result.rows.length) {
+      throw new InvariantError('Alat Masih Dipinjam!');
+    }
+    return true;
+  }
+
+  // redundan dengan detail user di user service
+  async detailUserWithEmail(email) {
+    const query = {
+      text: 'select * from users where email = $1;',
+      values: [email],
+    };
+    const result = await this._pool.query(query);
+    if (!result.rows.length) {
+      throw new NotFoundError('Data Tidak Ditemukan!');
+    }
+    return result.rows[0];
   }
 
   // example for add

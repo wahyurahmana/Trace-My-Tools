@@ -7,10 +7,10 @@ module.exports = class AuthService {
     this._pool = new Pool();
   }
 
-  async isAdmin(idBadge) {
+  async isAdmin(idUser) {
     const query = {
-      text: 'select * from users where id_badge = $1 AND status = $2;',
-      values: [idBadge, 'hash'],
+      text: 'select * from users where id_user = $1 AND status = $2;',
+      values: [idUser, 'hash'],
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
@@ -19,14 +19,14 @@ module.exports = class AuthService {
     return true;
   }
 
-  async isOwnerUser(idBadge, idParam) {
-    if (idBadge !== idParam) {
+  async isOwnerUser(idUser, idParam) {
+    if (idUser !== idParam) {
       throw new AuthorizationError('Anda Bukan Pemilik Data Ini!');
     }
     return true;
     // const query = {
-    //   text: 'select * from users where id_badge = $1;',
-    //   values: [idBadge],
+    //   text: 'select * from users where id_user = $1;',
+    //   values: [idUser],
     // };
     // const result = await this._pool.query(query);
     // if (!result.rows.length) {

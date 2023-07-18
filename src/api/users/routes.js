@@ -35,7 +35,7 @@ module.exports = (handler) => [
   },
   {
     method: 'DELETE',
-    path: '/users/{idBadge}',
+    path: '/users/{idUser}',
     handler: (request, h) => handler.deleteUserHandler(request, h),
     options: {
       auth: 'app_jwt',
@@ -43,7 +43,7 @@ module.exports = (handler) => [
   },
   {
     method: 'PUT',
-    path: '/users/{idBadge}',
+    path: '/users/{idUser}',
     handler: (request, h) => handler.putUserHandler(request, h),
     options: {
       auth: 'app_jwt',
@@ -51,7 +51,7 @@ module.exports = (handler) => [
   },
   {
     method: 'GET',
-    path: '/users/{idBadge}',
+    path: '/users/{idUser}',
     handler: (request, h) => handler.detailUserHandler(request, h),
     options: {
       auth: 'app_jwt',

@@ -4,8 +4,8 @@ exports.shorthands = undefined;
 
 exports.up = (pgm) => {
   pgm.createTable('users', {
-    id_badge: {
-      type: 'VARCHAR(20)',
+    id_user: {
+      type: 'VARCHAR(50)',
       notNull: true,
       primaryKey: true,
       unique: true,
