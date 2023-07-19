@@ -3,6 +3,7 @@ const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
+const moment = require('moment-timezone');
 
 module.exports = class ActivityService {
   constructor() {
@@ -12,19 +13,25 @@ module.exports = class ActivityService {
   async getAllActivity(teamId) {
     // melihat semua daftar aktivitas dari tools yang user login pinjam kepada tim lain
     const queryPinjam = {
-      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 ORDER BY activities.id DESC;',
+      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 ORDER BY activities.status;',
       values: ['peminjam', 'team', teamId],
     };
     // melihat semua daftar aktivitas dari tools yang user memberikan pinjaman tools
     const queryPemberi = {
-      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 ORDER BY activities.id DESC;',
+      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 ORDER BY activities.status;',
       values: ['pemberi', 'team', teamId],
     };
     const resultPinjam = await this._pool.query(queryPinjam);
     const resultPemberi = await this._pool.query(queryPemberi);
     const result = {
-      listPinjaman: resultPinjam.rows,
-      listDipinjam: resultPemberi.rows,
+      listPinjaman: resultPinjam.rows.map((el) => {
+        el.created_at = moment(el.created_at, 'Asia/Makassar').format();
+        return el;
+      }),
+      listDipinjam: resultPemberi.rows.map((el) => {
+        el.created_at = moment(el.created_at, 'Asia/Makassar').format();
+        return el;
+      }),
     };
     return result;
   }

@@ -20,6 +20,7 @@
     "bcrypt": "^5.1.0",
     "dotenv": "^16.1.4",
     "joi": "^17.9.2",
+    "moment-timezone": "^0.5.43",
     "nanoid": "^3.3.6",
     "node-pg-migrate": "^6.2.2",
     "pg": "^8.11.0"
