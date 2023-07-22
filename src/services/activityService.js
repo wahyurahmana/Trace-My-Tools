@@ -36,30 +36,47 @@ module.exports = class ActivityService {
     return result;
   }
 
-  async addActivity(data) {
-    const id = nanoid(16);
-    const {
-      toolId, createdAt, peminjamEmail, teamPeminjam, pemberiEmail, teamPemberi, buktiPinjam,
-    } = data;
-    const info = {
-      peminjam: {
-        team: teamPeminjam,
-        user: peminjamEmail,
-      },
-      pemberi: {
-        team: teamPemberi,
-        user: pemberiEmail,
-      },
-    };
-    const query = {
-      text: 'insert into activities (id, tool_id, created_at, status, info, bukti_pinjam) values ($1, $2, $3, $4, $5, $6) returning *;',
-      values: [id, toolId, createdAt, false, JSON.stringify(info), buktiPinjam],
-    };
-    const result = await this._pool.query(query);
-    if (!result.rows.length) {
-      throw new InvariantError('Gagal Menambahkan Data!');
+  async addActivity(data, currentStockTool) {
+    try {
+      await this._pool.query('BEGIN');
+      const id = nanoid(16);
+      const {
+        toolId,
+        createdAt,
+        peminjamEmail, teamPeminjam, pemberiEmail, teamPemberi,
+        buktiPinjam,
+        quantity,
+      } = data;
+      const info = {
+        peminjam: {
+          team: teamPeminjam,
+          user: peminjamEmail,
+        },
+        pemberi: {
+          team: teamPemberi,
+          user: pemberiEmail,
+        },
+      };
+      const queryUpdateStockTool = {
+        text: 'update tools set stock = $1 where id = $2;',
+        values: [currentStockTool - (+quantity), toolId],
+      };
+      await this._pool.query(queryUpdateStockTool);
+      const query = {
+        text: 'insert into activities (id, tool_id, created_at, status, info, bukti_pinjam, quantity) values ($1, $2, $3, $4, $5, $6, $7) returning *;',
+        values: [id, toolId, createdAt, false, JSON.stringify(info), buktiPinjam, quantity],
+      };
+      const result = await this._pool.query(query);
+      if (!result.rows.length) {
+        await this._pool.query('ROLLBACK');
+        throw new InvariantError('Gagal Menambahkan Data!');
+      }
+      await this._pool.query('COMMIT');
+      return result.rows[0];
+    } catch (error) {
+      await this._pool.query('ROLLBACK');
+      return error;
     }
-    return result.rows[0];
   }
 
   async deleteActivity(id) {
@@ -74,32 +91,49 @@ module.exports = class ActivityService {
     return result.rows[0].id;
   }
 
-  async changeStatus(idActivity, status, buktiTerima) {
-    const query = {
-      text: 'UPDATE activities SET status = $1, bukti_terima = $2 WHERE id = $3 returning id;',
-      values: [status, buktiTerima, idActivity],
-    };
-    const result = await this._pool.query(query);
+  async changeStatus(idActivity, status, buktiTerima, quantity, toolId) {
+    try {
+      await this._pool.query('BEGIN');
 
-    if (!result.rows.length) {
-      throw new NotFoundError('Gagal Mengubah Data. Id Tidak Ditemukan!');
+      const queryCurrentStockTool = {
+        text: 'select * from tools where id = $1',
+        values: [toolId],
+      };
+      const currentStockTool = await this._pool.query(queryCurrentStockTool);
+      const queryUpdateStockTool = {
+        text: 'update tools set stock = $1 where id = $2;',
+        values: [currentStockTool.rows[0].stock + (+quantity), toolId],
+      };
+      await this._pool.query(queryUpdateStockTool);
+
+      const query = {
+        text: 'UPDATE activities SET status = $1, bukti_terima = $2 WHERE id = $3 returning id;',
+        values: [status, buktiTerima, idActivity],
+      };
+      const result = await this._pool.query(query);
+      if (!result.rows.length) {
+        throw new NotFoundError('Gagal Mengubah Data. Id Tidak Ditemukan!');
+      }
+      await this._pool.query('COMMIT');
+      return result.rows[0].id;
+    } catch (error) {
+      await this._pool.query('ROLLBACK');
+      return error;
     }
-    return result.rows[0].id;
   }
 
-  async cekStatusToolId(toolId) {
+  async cekAvailableTool(toolId, quantity) {
     const query = {
-      text: 'select * from activities where status = false and tool_id = $1;',
+      text: 'select * from tools where id = $1;',
       values: [toolId],
     };
     const result = await this._pool.query(query);
-    if (result.rows.length) {
-      throw new InvariantError('Alat Masih Dipinjam!');
+    if (quantity > result.rows[0].stock) {
+      throw new InvariantError('Stock Alat Kurang');
     }
-    return true;
+    return +result.rows[0].stock;
   }
 
-  // redundan dengan detail user di user service
   async detailUserWithEmail(email) {
     const query = {
       text: 'select * from users where email = $1;',
@@ -117,4 +151,20 @@ module.exports = class ActivityService {
   // values ('test2', 'tool-P42dbGOlI_CSiiv-', 2, '2023-02-02', false,
   // '{"peminjam" : {"team": "team-PeJj8IM0phxzTcHE", "user": "30022171"},
   // "pemberi" : {"team": "team-SXJjvU9_lRVhO_mj", "user": "30022172"}}');
+
+  async detailActivity(idActivity) {
+    const query = {
+      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where activities.id = $1;',
+      values: [idActivity],
+    };
+    const result = await this._pool.query(query);
+    if (!result.rows.length) {
+      throw new NotFoundError('Data Tidak Ditemukan!');
+    }
+    const activity = result.rows.map((el) => {
+      el.created_at = moment(el.created_at, 'Asia/Makassar').format();
+      return el;
+    });
+    return activity;
+  }
 };

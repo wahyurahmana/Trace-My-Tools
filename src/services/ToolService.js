@@ -11,7 +11,7 @@ module.exports = class ToolService {
 
   async getAllTool(teamId) {
     const query = {
-      text: 'SELECT tools.*, teams.nama as nama_team FROM tools INNER JOIN teams ON tools.team_id = teams.id WHERE tools.team_id = $1 ORDER BY tools.id DESC;',
+      text: 'SELECT tools.*, teams.nama as nama_team FROM tools INNER JOIN teams ON tools.team_id = teams.id WHERE tools.team_id = $1 ORDER BY tools.stock DESC;',
       values: [teamId],
     };
     const result = await this._pool.query(query);
@@ -21,11 +21,11 @@ module.exports = class ToolService {
   async addTool(data) {
     const id = `tool-${nanoid(16)}`;
     const {
-      nama, fileName, teamId,
+      nama, fileName, teamId, stock,
     } = data;
     const query = {
-      text: 'INSERT INTO tools VALUES ($1, $2, $3, $4) returning id;',
-      values: [id, nama, fileName, teamId],
+      text: 'INSERT INTO tools (id, nama, foto, team_id, stock) VALUES ($1, $2, $3, $4, $5) returning id;',
+      values: [id, nama, fileName, teamId, stock],
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
@@ -48,11 +48,11 @@ module.exports = class ToolService {
 
   async editTool(id, data) {
     const {
-      nama, fileName,
+      nama, fileName, stock,
     } = data;
     const query = {
-      text: 'UPDATE tools SET nama = $1, foto = $2 WHERE id = $3 returning id',
-      values: [nama, fileName, id],
+      text: 'UPDATE tools SET nama = $1, foto = $2, stock = $3 WHERE id = $4 returning id',
+      values: [nama, fileName, +stock, id],
     };
     const result = await this._pool.query(query);
     if (!result.rows.length) {
@@ -73,7 +73,6 @@ module.exports = class ToolService {
     return result.rows;
   }
 
-  // redundan dengan cek status tool id activity service
   async cekStatusToolId(toolId) {
     const query = {
       text: 'select * from activities where status = false and tool_id = $1;',

@@ -10,12 +10,13 @@ const ImageHeadersSchema = Joi.object({
 
 const ToolPayloadSchema = Joi.object({
   nama: Joi.string().required(),
+  stock: Joi.number().required(),
 });
 
 const RegisterPayloadSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8).max(16).required(),
-  noHP: Joi.string().required(),
+  noHP: Joi.number().required(),
   teamId: Joi.string().required(),
 });
 

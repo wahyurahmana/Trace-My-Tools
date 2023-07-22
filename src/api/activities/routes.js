@@ -7,7 +7,7 @@ module.exports = (handler) => [
       auth: 'app_jwt',
     },
   },
-  {
+  { // used fe
     method: 'POST',
     path: '/activities',
     handler: (request, h) => handler.postActivityHandler(request, h),
@@ -21,7 +21,7 @@ module.exports = (handler) => [
       },
     },
   },
-  {
+  { // used fe
     method: 'DELETE',
     path: '/activities/{id}',
     handler: (request, h) => handler.deleteActivityHandler(request, h),
@@ -29,7 +29,7 @@ module.exports = (handler) => [
       auth: 'app_jwt',
     },
   },
-  {
+  { // used fe
     method: 'PATCH',
     path: '/activities/{id}',
     handler: (request, h) => handler.patchActivityChangeStatusHandler(request, h),
@@ -41,6 +41,14 @@ module.exports = (handler) => [
         output: 'stream',
         maxBytes: 5242880,
       },
+    },
+  },
+  { // used fe
+    method: 'GET',
+    path: '/activities/{id}',
+    handler: (request, h) => handler.getDetailActivityHandler(request, h),
+    options: {
+      auth: 'app_jwt',
     },
   },
 ];
