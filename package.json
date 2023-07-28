@@ -8,7 +8,7 @@
     "dev": "nodemon ./src/app.js",
     "migrate": "node-pg-migrate",
     "eslint": "eslint ./src",
-    "start": "NODE_ENV=production node ./src/app.js"
+    "start": "node ./src/app.js"
   },
   "author": "",
   "license": "ISC",

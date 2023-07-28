@@ -146,12 +146,6 @@ module.exports = class ActivityService {
     return result.rows[0];
   }
 
-  // example for add
-  // insert into activities (id, tool_id, quantity, created_at, status, info)
-  // values ('test2', 'tool-P42dbGOlI_CSiiv-', 2, '2023-02-02', false,
-  // '{"peminjam" : {"team": "team-PeJj8IM0phxzTcHE", "user": "30022171"},
-  // "pemberi" : {"team": "team-SXJjvU9_lRVhO_mj", "user": "30022172"}}');
-
   async detailActivity(idActivity) {
     const query = {
       text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where activities.id = $1;',

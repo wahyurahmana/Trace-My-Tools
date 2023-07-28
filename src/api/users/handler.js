@@ -76,6 +76,7 @@ module.exports = class UserHandler {
   async postUserHandler(request, h) {
     try {
       this._validator.validateRegisterPayload(request.payload);
+      await this._authService.isAdmin(request.auth.credentials.idUser);
       const id = await this._service.addUser(request.payload);
       const response = h.response({
         status: 'success',

@@ -19,6 +19,9 @@ module.exports = (handler) => [
     method: 'POST',
     path: '/register',
     handler: (request, h) => handler.postUserHandler(request, h),
+    options: {
+      auth: 'app_jwt',
+    },
   },
   { // used FE
     method: 'GET',
