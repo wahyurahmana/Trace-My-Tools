@@ -7,18 +7,19 @@ const moment = require('moment-timezone');
 
 module.exports = class ActivityService {
   constructor() {
+    moment.tz.setDefault("Asia/Makassar");
     this._pool = new Pool();
   }
 
   async getAllActivity(teamId) {
     // melihat semua daftar aktivitas dari tools yang user login pinjam kepada tim lain
     const queryPinjam = {
-      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 ORDER BY activities.status;',
+      text: 'select activities.*, tools.nama, tools.foto, teams.nama as nama_team from activities inner join tools on activities.tool_id = tools.id inner join teams on tools.team_id = teams.id where activities.info -> $1 ->> $2 = $3 ORDER BY activities.status;',
       values: ['peminjam', 'team', teamId],
     };
     // melihat semua daftar aktivitas dari tools yang user memberikan pinjaman tools
     const queryPemberi = {
-      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where info -> $1 ->> $2 = $3 ORDER BY activities.status;',
+      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where activities.info -> $1 ->> $2 = $3 ORDER BY activities.status;',
       values: ['pemberi', 'team', teamId],
     };
     const resultPinjam = await this._pool.query(queryPinjam);
@@ -128,10 +129,16 @@ module.exports = class ActivityService {
       values: [toolId],
     };
     const result = await this._pool.query(query);
-    if (quantity > result.rows[0].stock) {
-      throw new InvariantError('Stock Alat Kurang');
+    if (quantity <= 0) {
+      throw new InvariantError('Perhatikan Jumlah');
     }
-    return +result.rows[0].stock;
+    if (result.rows.length) {
+      if (quantity > result.rows[0].stock) {
+        throw new InvariantError('Stock Alat Kurang');
+      }
+      return +result.rows[0].stock;
+    }
+    throw new NotFoundError('Data Tidak Ditemukan!');
   }
 
   async detailUserWithEmail(email) {
