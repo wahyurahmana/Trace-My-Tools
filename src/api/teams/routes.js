@@ -5,6 +5,7 @@ module.exports = (handler) => [
     handler: (request, h) => handler.getTeamHandler(request, h),
   },
   {
+    // used BE via Postman
     method: 'POST',
     path: '/teams',
     handler: (request, h) => handler.postTeamHandler(request, h),

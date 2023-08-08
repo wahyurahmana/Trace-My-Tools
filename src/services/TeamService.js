@@ -45,7 +45,7 @@ module.exports = class TeamService {
 
   async editTeam(id, data) {
     const query = {
-      text: 'UPDATE teams SET nama = $1, WHERE id = $2 returning id',
+      text: 'UPDATE teams SET nama = $1 WHERE id = $2 returning id',
       values: [data.nama, id],
     };
     const result = await this._pool.query(query);
