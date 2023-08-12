@@ -6,7 +6,7 @@
 1. Jalankan Aplikasi Menggunakan:
     - npm start : Jika Digunakan Pada Tahap Production
     - npm run dev : Jika Digunakan Pada Tahap Development
-1. Silahkan Daftar Akun Untuk Admin Pada URL API **host:port/register**
+1. Silahkan Daftar Akun Untuk Admin Pada Database Postgres (sql insert)
 1. Silahkan Ubah Status Akun Admin Pada Database Postgres Menjadi **hash**
 1. Silahkan Buat Daftar Tim
 
