@@ -14,6 +14,7 @@ module.exports = (handler) => [
     },
   },
   {
+    // used BE via Postman
     method: 'DELETE',
     path: '/teams/{id}',
     handler: (request, h) => handler.deleteTeamHandler(request, h),
@@ -22,6 +23,7 @@ module.exports = (handler) => [
     },
   },
   {
+    // used BE via Postman
     method: 'PUT',
     path: '/teams/{id}',
     handler: (request, h) => handler.putTeamHandler(request, h),

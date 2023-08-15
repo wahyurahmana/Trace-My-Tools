@@ -254,4 +254,30 @@ module.exports = class UserHandler {
       return response;
     }
   }
+
+  async getCheckEmailHandler(request, h) {
+    try {
+      // check ketersedian email terlebih dahulu
+      // kirim alamat FE dengan parameter token dengan masa expired
+
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
 };

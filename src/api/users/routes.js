@@ -1,5 +1,6 @@
 module.exports = (handler) => [
   {
+    // used BE via Postman
     method: 'GET',
     path: '/users',
     handler: (request, h) => handler.getUserHandler(request, h),
@@ -22,6 +23,11 @@ module.exports = (handler) => [
     options: {
       auth: 'app_jwt',
     },
+  },
+  {
+    method: 'GET',
+    path: '/forgot-password',
+    handler: (request, h) => handler.getCheckEmailHandler(request, h),
   },
   { // used FE
     method: 'GET',

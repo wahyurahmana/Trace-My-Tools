@@ -1,25 +1,25 @@
 /* eslint-disable no-underscore-dangle */
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
+const moment = require('moment-timezone');
 const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
-const moment = require('moment-timezone');
 
 module.exports = class ActivityService {
   constructor() {
-    moment.tz.setDefault("Asia/Makassar");
+    moment.tz.setDefault('Asia/Makassar');
     this._pool = new Pool();
   }
 
   async getAllActivity(teamId) {
     // melihat semua daftar aktivitas dari tools yang user login pinjam kepada tim lain
     const queryPinjam = {
-      text: 'select activities.*, tools.nama, tools.foto, teams.nama as nama_team from activities inner join tools on activities.tool_id = tools.id inner join teams on tools.team_id = teams.id where activities.info -> $1 ->> $2 = $3 ORDER BY activities.created_at;',
+      text: 'select activities.*, tools.nama, tools.foto, teams.nama as nama_team from activities inner join tools on activities.tool_id = tools.id inner join teams on tools.team_id = teams.id where activities.info -> $1 ->> $2 = $3 ORDER BY activities.created_at DESC;',
       values: ['peminjam', 'team', teamId],
     };
     // melihat semua daftar aktivitas dari tools yang user memberikan pinjaman tools
     const queryPemberi = {
-      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where activities.info -> $1 ->> $2 = $3 ORDER BY activities.created_at;',
+      text: 'select activities.*, tools.nama, tools.foto from activities inner join tools on activities.tool_id = tools.id where activities.info -> $1 ->> $2 = $3 ORDER BY activities.created_at DESC;',
       values: ['pemberi', 'team', teamId],
     };
     const resultPinjam = await this._pool.query(queryPinjam);
@@ -47,6 +47,7 @@ module.exports = class ActivityService {
         peminjamEmail, teamPeminjam, pemberiEmail, teamPemberi,
         buktiPinjam,
         quantity,
+        note,
       } = data;
       const info = {
         peminjam: {
@@ -64,8 +65,8 @@ module.exports = class ActivityService {
       };
       await this._pool.query(queryUpdateStockTool);
       const query = {
-        text: 'insert into activities (id, tool_id, created_at, status, info, bukti_pinjam, quantity) values ($1, $2, $3, $4, $5, $6, $7) returning *;',
-        values: [id, toolId, createdAt, false, JSON.stringify(info), buktiPinjam, quantity],
+        text: 'insert into activities (id, tool_id, created_at, status, info, bukti_pinjam, quantity, note) values ($1, $2, $3, $4, $5, $6, $7, $8) returning *;',
+        values: [id, toolId, createdAt, false, JSON.stringify(info), buktiPinjam, quantity, note],
       };
       const result = await this._pool.query(query);
       if (!result.rows.length) {
