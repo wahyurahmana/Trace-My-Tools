@@ -24,11 +24,6 @@ module.exports = (handler) => [
       auth: 'app_jwt',
     },
   },
-  {
-    method: 'GET',
-    path: '/forgot-password',
-    handler: (request, h) => handler.getCheckEmailHandler(request, h),
-  },
   { // used FE
     method: 'GET',
     path: '/users-list',

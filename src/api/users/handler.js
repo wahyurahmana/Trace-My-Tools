@@ -198,6 +198,7 @@ module.exports = class UserHandler {
 
   async loginHandler(request, h) {
     try {
+      await this._validator.validateLoginPayload(request.payload);
       const payload = await this._service.checkidUserAndPass(request.payload);
       const token = this._tokenManager.generate(payload);
       const response = h.response({
@@ -234,32 +235,6 @@ module.exports = class UserHandler {
         data: users,
       });
       return response;
-    } catch (error) {
-      if (error instanceof ClientError) {
-        const response = h.response({
-          status: 'fail',
-          message: error.message,
-        });
-        response.code(error.statusCode);
-        return response;
-      }
-
-      // Server ERROR!
-      const response = h.response({
-        status: 'error',
-        message: 'Maaf, terjadi kegagalan pada server kami.',
-      });
-      response.code(500);
-      console.error(error);
-      return response;
-    }
-  }
-
-  async getCheckEmailHandler(request, h) {
-    try {
-      // check ketersedian email terlebih dahulu
-      // kirim alamat FE dengan parameter token dengan masa expired
-
     } catch (error) {
       if (error instanceof ClientError) {
         const response = h.response({

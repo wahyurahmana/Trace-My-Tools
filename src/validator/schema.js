@@ -14,7 +14,7 @@ const ToolPayloadSchema = Joi.object({
 });
 
 const RegisterPayloadSchema = Joi.object({
-  email: Joi.string().email().required(),
+  email: Joi.string().email().required().uppercase(),
   password: Joi.string().min(8).max(16).required(),
   noHP: Joi.number().required(),
   teamId: Joi.string().required(),
@@ -32,6 +32,11 @@ const UpdateUserPayloadSchema = Joi.object({
   teamId: Joi.string().required(),
 });
 
+const LoginPayloadSchema = Joi.object({
+  email: Joi.string().email().required().uppercase(),
+  password: Joi.string().min(8).max(16).required(),
+});
+
 module.exports = {
   TeamPayloadSchema,
   ImageHeadersSchema,
@@ -39,4 +44,5 @@ module.exports = {
   RegisterPayloadSchema,
   ChangePassPayloadSchema,
   UpdateUserPayloadSchema,
+  LoginPayloadSchema,
 };

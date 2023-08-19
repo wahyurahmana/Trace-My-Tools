@@ -149,4 +149,16 @@ module.exports = class UserService {
     };
     return result;
   }
+
+  async checkUserByEmail(email) {
+    const query = {
+      text: 'select * from users where email = $1;',
+      values: [email],
+    };
+    const user = await this._pool.query(query);
+    if (!user.rows.length) {
+      throw new NotFoundError('Email Tidak Ditemukan');
+    }
+    return { idUser: user.rows[0].id_user, teamId: user.rows[0].team_id };
+  }
 };

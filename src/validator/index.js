@@ -5,6 +5,7 @@ const {
   RegisterPayloadSchema,
   ChangePassPayloadSchema,
   UpdateUserPayloadSchema,
+  LoginPayloadSchema,
 } = require('./schema');
 const InvariantError = require('../exceptions/InvariantError');
 
@@ -41,6 +42,12 @@ module.exports = {
   },
   validateUpdateUserPayload: (payload) => {
     const validationResult = UpdateUserPayloadSchema.validate(payload);
+    if (validationResult.error) {
+      throw new InvariantError(validationResult.error.message);
+    }
+  },
+  validateLoginPayload: (payload) => {
+    const validationResult = LoginPayloadSchema.validate(payload);
     if (validationResult.error) {
       throw new InvariantError(validationResult.error.message);
     }
