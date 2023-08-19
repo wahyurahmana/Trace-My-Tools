@@ -118,7 +118,7 @@ module.exports = class UserService {
   async checkidUserAndPass({ email, password }) {
     const query = {
       text: 'select * from users where email = $1;',
-      values: [email],
+      values: [email.toLowerCase()],
     };
     const user = await this._pool.query(query);
     if (!user.rows.length) {
@@ -153,7 +153,7 @@ module.exports = class UserService {
   async checkUserByEmail(email) {
     const query = {
       text: 'select * from users where email = $1;',
-      values: [email],
+      values: [email.toLowerCase()],
     };
     const user = await this._pool.query(query);
     if (!user.rows.length) {
