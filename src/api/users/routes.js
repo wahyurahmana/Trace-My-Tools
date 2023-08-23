@@ -24,6 +24,19 @@ module.exports = (handler) => [
       auth: 'app_jwt',
     },
   },
+  {
+    method: 'POST',
+    path: '/forgot-password',
+    handler: (request, h) => handler.getCheckEmailHandler(request, h),
+  },
+  {
+    method: 'PATCH',
+    path: '/forgot-password',
+    handler: (request, h) => handler.patchPasswordByTokenForgotPass(request, h),
+    options: {
+      auth: 'app_jwt',
+    },
+  },
   { // used FE
     method: 'GET',
     path: '/users-list',

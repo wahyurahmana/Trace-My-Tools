@@ -2,11 +2,12 @@
 const ClientError = require('../../exceptions/ClientError');
 
 module.exports = class UserHandler {
-  constructor(service, validator, tokenManager, authService) {
+  constructor(service, validator, tokenManager, authService, senderWA) {
     this._service = service;
     this._validator = validator;
     this._tokenManager = tokenManager;
     this._authService = authService;
+    this._senderWA = senderWA;
   }
 
   async getUserHandler(request, h) {
@@ -233,6 +234,67 @@ module.exports = class UserHandler {
       const response = h.response({
         status: 'success',
         data: users,
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async getCheckEmailHandler(request, h) {
+    try {
+      const payload = await this._service.checkUserByEmail(request.payload.email);
+      const token = await this._tokenManager.generate(payload[0]);
+      const response = h.response({
+        status: 'success',
+        url: `http://siremy.my.id/forgot-password/${token}`,
+      });
+      this._senderWA.singleSend(payload[1], `Please Click This Link http://siremy.my.id/forgot-password/${token}`);
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
+    }
+  }
+
+  async patchPasswordByTokenForgotPass(request, h) {
+    try {
+      // decode token lalu ubah password by id_user
+      await this._service.forgotPass(request.auth.credentials.idUser, request.payload.newPassword);
+      const response = h.response({
+        status: 'success',
+        message: 'Sukses Ubah Password',
       });
       return response;
     } catch (error) {

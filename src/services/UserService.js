@@ -159,6 +159,19 @@ module.exports = class UserService {
     if (!user.rows.length) {
       throw new NotFoundError('Email Tidak Ditemukan');
     }
-    return { idUser: user.rows[0].id_user, teamId: user.rows[0].team_id };
+    return [{ idUser: user.rows[0].id_user, teamId: user.rows[0].team_id }, user.rows[0].no_hp];
+  }
+
+  async forgotPass(idUser, newPassword) {
+    const hashPassword = bcrypt.hashSync(newPassword, salt);
+    const query = {
+      text: 'update users set password = $1 where id_user = $2 returning id_user;',
+      values: [hashPassword, idUser],
+    };
+    const result = await this._pool.query(query);
+    if (!result.rows[0].id_user) {
+      throw new InvariantError('Gagal Mengubah Password!');
+    }
+    return result.rows[0].id_user;
   }
 };

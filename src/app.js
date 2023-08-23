@@ -80,6 +80,7 @@ const init = async () => {
       validator,
       tokenManager,
       authService,
+      senderWA,
     },
   }, {
     plugin: tools,
@@ -97,6 +98,7 @@ const init = async () => {
       storage,
       authService,
       senderWA,
+      toolService,
     },
   }]);
 

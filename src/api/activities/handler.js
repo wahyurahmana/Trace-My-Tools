@@ -2,12 +2,13 @@
 const ClientError = require('../../exceptions/ClientError');
 
 module.exports = class TeamHandler {
-  constructor(service, validator, authService, storage, senderWA) {
+  constructor(service, validator, authService, storage, senderWA, toolService) {
     this._service = service;
     this._validator = validator;
     this._authService = authService;
     this._storage = storage;
     this._senderWA = senderWA;
+    this._toolService = toolService;
   }
 
   async getActivityHandler(request, h) {
@@ -54,8 +55,9 @@ module.exports = class TeamHandler {
       response.code(201);
       const peminjam = await this._service.detailUserWithEmail(result.info.peminjam.user);
       const pemberi = await this._service.detailUserWithEmail(result.info.pemberi.user);
-      this._senderWA.singleSend(peminjam.no_hp, `Halo ${result.info.peminjam.user}, Anda Saat Ini Sedang Meminjam Alat Di ${pemberi.email}. Jangan Lupa Dikembalikan Sebelum Jam 4 yaa.`);
-      this._senderWA.singleSend(pemberi.no_hp, `Halo ${result.info.pemberi.user}, Anda Saat Ini Sedang Meminjamkan Alat Kepada ${peminjam.email}.`);
+      const tool = await this._toolService.detailTool(request.payload.toolId);
+      this._senderWA.singleSend(peminjam.no_hp, `Halo ${result.info.peminjam.user}, Anda Saat Ini Sedang Meminjam Alat *${tool[0].nama}* Di ${pemberi.email}. Jangan Lupa Dikembalikan Sebelum Jam 4 ya. Silahkan Cek di http://siremy.my.id`);
+      this._senderWA.singleSend(pemberi.no_hp, `Halo ${result.info.pemberi.user}, Anda Saat Ini Sedang Meminjamkan Alat *${tool[0].nama}* Kepada ${peminjam.email}. Silahkan Cek di http://siremy.my.id`);
 
       return response;
     } catch (error) {
