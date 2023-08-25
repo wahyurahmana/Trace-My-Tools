@@ -265,7 +265,7 @@ module.exports = class UserHandler {
         status: 'success',
         url: `http://siremy.my.id/forgot-password/${token}`,
       });
-      this._senderWA.singleSend(payload[1], `Please Click This Link http://siremy.my.id/forgot-password/${token}`);
+      this._senderWA.singleSend(payload[1], `Berikut Adalah Link Untuk Lupa Password Anda http://siremy.my.id/forgot-password/${token}`);
       return response;
     } catch (error) {
       if (error instanceof ClientError) {
@@ -290,7 +290,6 @@ module.exports = class UserHandler {
 
   async patchPasswordByTokenForgotPass(request, h) {
     try {
-      // decode token lalu ubah password by id_user
       await this._service.forgotPass(request.auth.credentials.idUser, request.payload.newPassword);
       const response = h.response({
         status: 'success',
